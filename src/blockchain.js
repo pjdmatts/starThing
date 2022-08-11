@@ -127,7 +127,7 @@ class Blockchain {
             let timeNow = parseInt(new Date().getTime().toString().slice(0, -3));
             //Check if the time elapsed is less than 5 minutes
             if((timeNow - timeSent) > 5*60) {
-                const why = 'Way too much time has passed';
+                let why = 'Way too much time has passed';
                 reject(why);
             } else {
                 //Verify the message with wallet address and signature
@@ -136,6 +136,9 @@ class Blockchain {
                     let blocky = new BlockClass.Block({"user":address, "star":star});
                     self._addBlock(blocky);
                     resolve(blocky);
+                } else {
+                    let why = 'Something went wrong';
+                    reject(why);
                 }
             }
 
@@ -151,7 +154,12 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-
+            let block = self.chain.filter(p => p.hash === hash)[0];
+            if (block) {
+                resolve(block);
+            } else {
+                resolve(null);
+            }
         });
     }
 
