@@ -98,7 +98,6 @@ class Blockchain {
         return new Promise((resolve) => {
             ownershipMessage = '${address}}:${new Date().getTime().toString().slice(0,-3)}:starRegistry';
             resolve(ownershipMessage);
-
         });
     }
 
@@ -122,6 +121,23 @@ class Blockchain {
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
+            //Get the time from the message sent as a parameter example: `parseInt(message.split(':')[1])`
+            let timeSent = parseInt(message.split(':')[1]);
+            //Get the current time: `let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));`
+            let timeNow = parseInt(new Date().getTime().toString().slice(0, -3));
+            //Check if the time elapsed is less than 5 minutes
+            if((timeNow - timeSent) > 5*60) {
+                const why = 'Way too much time has passed';
+                reject(why);
+            } else {
+                //Verify the message with wallet address and signature
+                if(bitcoinMessage.verify(message, address, signature)) {
+                    //Create the block and add it to the chain
+                    let blocky = new BlockClass.Block({"user":address, "star":star});
+                    self._addBlock(blocky);
+                    resolve(blocky);
+                }
+            }
 
         });
     }
