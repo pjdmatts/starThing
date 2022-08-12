@@ -55,7 +55,6 @@ class Blockchain {
             block.height = self.getChainHeight();
             //assign timestamp
             block.time = new Date().getTime().toString().slice(0, -3);
-
             if (self.getBlockByHeight() > 0) {
                 // previous block hash
                 block.previousHash = self.getLatestBlock().hash;
@@ -159,7 +158,7 @@ class Blockchain {
     getBlockByHeight(height) {
         let self = this;
         return new Promise((resolve, reject) => {
-            let block = self.chain.filter(p => p.height === height)[0];
+            const block = self.chain.filter(p => p.height === height)[0];
             if (block) {
                 resolve(block);
             } else {
