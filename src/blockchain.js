@@ -14,14 +14,7 @@ const bitcoinMessage = require('bitcoinjs-message');
 
 class Blockchain {
 
-    /**
-     * Constructor of the class, you will need to setup your chain array and the height
-     * of your chain (the length of your chain array).
-     * Also everytime you create a Blockchain class you will need to initialized the chain creating
-     * the Genesis Block.
-     * The methods in this class will always return a Promise to allow client applications or
-     * other backends to call asynchronous functions.
-     */
+    //Constructor of the class
     constructor() {
         this.chain = [];
         this.height = -1;
@@ -54,18 +47,7 @@ class Blockchain {
         return this.chain[this.chain.length - 1];
     }
 
-    /**
-     * _addBlock(block) will store a block in the chain
-     * @param {*} block 
-     * The method will return a Promise that will resolve with the block added
-     * or reject if an error happen during the execution.
-     * You will need to check for the height to assign the `previousBlockHash`,
-     * assign the `timestamp` and the correct `height`...At the end you need to 
-     * create the `block hash` and push the block into the chain array. Don't for get 
-     * to update the `this.height`
-     * Note: the symbol `_` in the method name indicates in the javascript convention 
-     * that this method is a private method. 
-     */
+    //addBlock(block) will store a block in the chain
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
@@ -78,11 +60,17 @@ class Blockchain {
                 // previous block hash
                 block.previousHash = self.getLatestBlock().hash;
             }
-            //creat hash
+            //create hash
             block.hash = SHA256(JSON.stringify(block)).toString();
-            self.chain.push(block);
-            self.height += 1;
-            resolve(block);
+            //validate chain
+            let errors = self.validateChain();
+            if (errors.length === 0) {
+                self.chain.push(block);
+                self.height += 1;
+                resolve(block);
+            } else {
+                resolve(errors);
+            }
         });
     }
 
@@ -215,18 +203,22 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            for (const block in self.chain){
+            for (const block in self.chain) {
                 //validate each block
-                if(!block.validateBlock()) {
+                if (!block.validateBlock()) {
                     errorLog.push('Block number ${block.height} has an invalid hash');
                 }
                 //check with the previousBlockHash
                 let previous = block.getLatestBlock().hash;
-                if(!block.previousHash === previous){
+                if (!block.previousHash === previous) {
                     errorLog.push('Block number ${block.height} has an invalid previousBlockHash');
                 }
             }
-            resolve(errorLog);
+            if (errorLog.length > 1) {
+                resolve(errorLog);
+            } else {
+                resolve(null);
+            }
         });
     }
 
