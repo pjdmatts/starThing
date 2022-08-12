@@ -74,14 +74,14 @@ class Blockchain {
             //assign timestamp
             block.time = new Date().getTime().toString().slice(0, -3);
 
-            if(self.getBlockByHeight()>0) {
+            if (self.getBlockByHeight() > 0) {
                 // previous block hash
                 block.previousHash = self.getLatestBlock().hash;
             }
             //creat hash
             block.hash = SHA256(JSON.stringify(block)).toString();
             self.chain.push(block);
-            self.height +=1;
+            self.height += 1;
             resolve(block);
         });
     }
@@ -126,14 +126,14 @@ class Blockchain {
             //Get the current time: `let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));`
             let timeNow = parseInt(new Date().getTime().toString().slice(0, -3));
             //Check if the time elapsed is less than 5 minutes
-            if((timeNow - timeSent) > 5*60) {
+            if ((timeNow - timeSent) > 5 * 60) {
                 let why = 'Way too much time has passed';
                 reject(why);
             } else {
                 //Verify the message with wallet address and signature
-                if(bitcoinMessage.verify(message, address, signature)) {
+                if (bitcoinMessage.verify(message, address, signature)) {
                     //Create the block and add it to the chain
-                    let blocky = new BlockClass.Block({"user":address, "star":star});
+                    let blocky = new BlockClass.Block({ "user": address, "star": star });
                     self._addBlock(blocky);
                     resolve(blocky);
                 } else {
@@ -190,6 +190,17 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
+            for (const block in self.chain) {
+                let data = block.getBdata();
+                if (data.user === address) {
+                    stars.push[data];
+                }
+            }
+            if (stars) {
+                resolve(stars);
+            } else {
+                resolve(null);
+            }
 
         });
     }
