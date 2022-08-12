@@ -215,7 +215,18 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-
+            for (const block in self.chain){
+                //validate each block
+                if(!block.validateBlock()) {
+                    errorLog.push('Block number ${block.height} has an invalid hash');
+                }
+                //check with the previousBlockHash
+                let previous = block.getLatestBlock().hash;
+                if(!block.previousHash === previous){
+                    errorLog.push('Block number ${block.height} has an invalid previousBlockHash');
+                }
+            }
+            resolve(errorLog);
         });
     }
 
