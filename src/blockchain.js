@@ -57,8 +57,8 @@ class Blockchain {
                 block.height = getChainHeight + 1;
             }
             block.time = new Date().getTime().toString().slice(0, -3);
-            if (self.getBlockByHeight() > 0) {
-                block.previousHash = self.getLatestBlock().hash;
+            if (self.chain.length > 0) {
+                block.previousBlockHash = self.chain[self.chain.length-1].hash;
             }
             block.hash = SHA256(JSON.stringify(block)).toString();
             self.chain.push(block);
@@ -204,12 +204,12 @@ class Blockchain {
             for (const block in self.chain) {
                 //validate each block
                 if (!block.validateBlock()) {
-                    errorLog.push('Block number ${block.height} has an invalid hash');
+                    errorLog.push(`Block number ${block.height} has an invalid hash`);
                 }
                 //check with the previousBlockHash
                 let previous = block.getLatestBlock().hash;
                 if (!block.previousHash === previous) {
-                    errorLog.push('Block number ${block.height} has an invalid previousBlockHash');
+                    errorLog.push(`Block number ${block.height} has an invalid previousBlockHash`);
                 }
             }
             if (errorLog.length > 1) {
