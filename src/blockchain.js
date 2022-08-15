@@ -77,7 +77,7 @@ class Blockchain {
      */
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
-            ownershipMessage = '${address}}:${new Date().getTime().toString().slice(0,-3)}:starRegistry';
+            const ownershipMessage = `${address}:${new Date().getTime().toString().slice(0,-3)}:starRegistry`;
             resolve(ownershipMessage);
         });
     }
