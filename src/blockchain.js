@@ -201,17 +201,17 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            for (const block in self.chain) {
+            self.chain.forEach(block => {
                 //validate each block
-                if (!block.validateBlock()) {
+                if (!block.validate()) {
                     errorLog.push(`Block number ${block.height} has an invalid hash`);
                 }
                 //check with the previousBlockHash
-                let previous = block.getLatestBlock().hash;
+                let previous = self.getLatestBlock().hash;
                 if (!block.previousHash === previous) {
                     errorLog.push(`Block number ${block.height} has an invalid previousBlockHash`);
                 }
-            }
+            })
             if (errorLog.length > 1) {
                 resolve(errorLog);
             } else {

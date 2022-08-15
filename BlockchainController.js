@@ -121,15 +121,13 @@ class BlockchainController {
     // Endpoint that allows use to validate chain
     requestChainValidation() {
         this.app.post("/requestChainValidation", async (req, res) => {
-            //stuff happens
             try {
-                let errors = this.blockchain.validateChain();
-                if (errors) {
-                    return res.status(500).send("A fault in the stars");
+                let errorList = this.blockchain.validateChain();
+                if (errorList.length!=0) {
+                    return res.status(500).send("Something is wrong with the chain of stars");
                 } else {
                     return res.status(200).send("Looks OK from here");
                 }
-
             } catch (error) {
                 return res.status(500).send("An error happened!");
             }
