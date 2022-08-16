@@ -71,7 +71,7 @@ The JSON includes:
 After adding several Star objects we can obtain the stars owned by us:
 
 ```
-
+localhost:8000/blocks/:address
 ```
 
 
