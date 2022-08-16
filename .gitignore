@@ -102,3 +102,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+#package lock in case it makes things blow up?
+.package-lock.json
