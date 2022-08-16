@@ -68,4 +68,10 @@ The JSON includes:
 
 - A Star object
 
+After adding several Star objects we can obtain the stars owned by us:
+
+```
+
+```
+
 
