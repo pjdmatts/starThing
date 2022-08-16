@@ -53,17 +53,23 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             let getChainHeight = self.height;
             if (getChainHeight === -1) {
+                console.log("Going to make a Genesis Block");
             } else {
                 block.height = getChainHeight + 1;
             }
             block.time = new Date().getTime().toString().slice(0, -3);
             if (self.chain.length > 0) {
-                block.previousBlockHash = self.chain[self.chain.length-1].hash;
+                block.previousBlockHash = self.chain[self.chain.length - 1].hash;
             }
-            block.hash = SHA256(JSON.stringify(block)).toString();
-            self.chain.push(block);
-            self.height += 1;
-            resolve(block);
+            let errorList = self.validateChain();
+            if(errorList.length > 0) {
+                reject(errorList);
+            } else {
+                block.hash = SHA256(JSON.stringify(block)).toString();
+                self.chain.push(block);
+                self.height += 1;
+                resolve(block);
+            }
         });
     }
 
@@ -77,7 +83,7 @@ class Blockchain {
      */
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
-            const ownershipMessage = `${address}:${new Date().getTime().toString().slice(0,-3)}:starRegistry`;
+            const ownershipMessage = `${address}:${new Date().getTime().toString().slice(0, -3)}:starRegistry`;
             resolve(ownershipMessage);
         });
     }
@@ -114,7 +120,7 @@ class Blockchain {
                 //Verify the message with wallet address and signature
                 if (bitcoinMessage.verify(message, address, signature)) {
                     //Create the block and add it to the chain
-                    let blocky = new BlockClass.Block({ "user": address, "star": star });
+                    let blocky = new BlockClass.Block({ "owner": address, "star": star });
                     self._addBlock(blocky);
                     resolve(blocky);
                 } else {
@@ -176,18 +182,19 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
-            for (const block in self.chain) {
-                let data = block.getBdata();
-                if (data.user === address) {
-                    stars.push[data];
+            self.chain.forEach(async (block) => {
+                try {
+                    let data = await block.getBData();
+                    if (data) {
+                        if (data.owner === address) {
+                            stars.push(data);
+                        }
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
-            }
-            if (stars) {
-                resolve(stars);
-            } else {
-                resolve(null);
-            }
-
+            });
+            resolve(stars);
         });
     }
 
@@ -201,22 +208,28 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            self.chain.forEach(block => {
-                //validate each block
-                if (!block.validate()) {
-                    errorLog.push(`Block number ${block.height} has an invalid hash`);
+            // use a loop to check the blocks
+            for (let i = 0; i < self.chain.length; i++) {
+                //take the current block
+                const CurrentBlock = self.chain[i];
+                if (!(await CurrentBlock.validate())) {
+                    errorLog.push({
+                        error: 'Failed validation',
+                        block: CurrentBlock
+                    });
                 }
-                //check with the previousBlockHash
-                let previous = self.getLatestBlock().hash;
-                if (!block.previousHash === previous) {
-                    errorLog.push(`Block number ${block.height} has an invalid previousBlockHash`);
+                // avoid the genesis block
+                if (i === 0) continue;
+                // compares current vs previous
+                const previousBlock = self.chain[i - 1];
+                if (CurrentBlock.previousBlockHash !== previousBlock.hash) {
+                    errorLog.push({
+                        error: 'Previous block hash doesn\'t match',
+                        block: CurrentBlock
+                    });
                 }
-            })
-            if (errorLog.length > 1) {
-                resolve(errorLog);
-            } else {
-                resolve(null);
             }
+            resolve(errorLog);
         });
     }
 

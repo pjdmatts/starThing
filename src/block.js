@@ -29,11 +29,15 @@ class Block {
     return new Promise((resolve, reject) => {
       try {
         // Save in auxiliary variable the current block hash
-        const auxHash = self.hash;
+        let auxHash = self.hash;
         // Recalculate the hash of the Block
-        const newHash = SHA256(JSON.stringify(self)).toString();
+        let newHash = SHA256(JSON.stringify(self)).toString();
         // Comparing if the hashes changed
-        resolve(newHash === auxHash);
+        self.hash = null;
+        if (newHash === auxHash) {
+          self.hash = auxHash;
+          resolve(true);
+        }
       } catch (err) {
         reject(new Error(err));
       }
