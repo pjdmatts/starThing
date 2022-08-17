@@ -204,6 +204,7 @@ class Blockchain {
      * 1. You should validate each block using `validateBlock`
      * 2. Each Block should check the with the previousBlockHash
      */
+    //https://knowledge.udacity.com/questions/614073
     validateChain() {
         let self = this;
         let errorLog = [];
@@ -211,21 +212,21 @@ class Blockchain {
             // use a loop to check the blocks
             for (let i = 0; i < self.chain.length; i++) {
                 //take the current block
-                const CurrentBlock = self.chain[i];
-                if (!(await CurrentBlock.validate())) {
+                const thisBlock = self.chain[i];
+                if (!(await thisBlock.validate())) {
                     errorLog.push({
                         error: 'Failed validation',
-                        block: CurrentBlock
+                        block: thisBlock
                     });
                 }
                 // avoid the genesis block
                 if (i === 0) continue;
                 // compares current vs previous
                 const previousBlock = self.chain[i - 1];
-                if (CurrentBlock.previousBlockHash !== previousBlock.hash) {
+                if (thisBlock.previousBlockHash !== previousBlock.hash) {
                     errorLog.push({
                         error: 'Previous block hash doesn\'t match',
-                        block: CurrentBlock
+                        block: thisBlock
                     });
                 }
             }

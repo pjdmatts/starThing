@@ -35,11 +35,13 @@ We used [POSTMAN](https://www.postman.com/) to test the API
 
 First thing to test is that the block at height 0 is the Genesis Block. 
 
-We ask POSTMAN to GET ```localhost:8000/block/height/0```
+GET ```localhost:8000/block/height/:height```
 
 ![](images/block_by_height.png?raw=true)
 
-Next we ask the API to create a message that will be tied to our wallet address by sending a POST to ```localhost:8000/requestValidation``` and pasting into the body our wallet address. Note: to get the wallet address we used the [online signature tool](https://reinproject.org/bitcoin-signature-tool/#sign) introduced in the project
+Next we ask the API to create a message that will be tied to our wallet address by sending a POST to ```localhost:8000/requestValidation``` and pasting into the body our wallet address. Note: to get the wallet address we used the [online signature tool](https://reinproject.org/bitcoin-signature-tool/#sign) introduced in the project.
+
+POST:```localhost:8000/requestValidation```
 
 ![](images/request_validation.png?raw=true)
 
@@ -68,23 +70,31 @@ The JSON includes:
 
 - A Star object
 
-We POST the data:
+POST: ```localhost:8000/submitStar```
 
 ![](images/submit_star1.png?raw=true)
 
 Once we have several stars added to the chain we can find the ones owned by the wallet address we have been using:
 
-![](images/images/stars_owned.png?raw=true)
+GET: ```localhost:8000/blocks/:address```
+
+![](images/stars_owned.png?raw=true)
 
 We can check back and see blocks at different heights:
+
+GET ```localhost:8000/block/height/:height```
 
 ![](images/block_by_height4.png?raw=true)
 
 And we can find blocks by their hash:
 
+GET ```localhost:8000/block/hash/:hash```
+
 ![](images/block_by_hash.png?raw=true)
 
 Finally we can use a new endpoint to validate the entire chain:
+
+GET ```localhist:8000/validate```
 
 ![](images/validate_chain.png?raw=true)
 
