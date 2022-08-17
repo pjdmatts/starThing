@@ -37,7 +37,7 @@ First thing to test is that the block at height 0 is the Genesis Block.
 
 We ask POSTMAN to GET ```localhost:8000/block/height/0```
 
-![](/home/peter/Pictures/Screenshots/Screenshot%20from%202022-08-16%2017-16-56.png)
+![](images/block_by_height.png?raw=true)
 
 Next we ask the API to create a message that will be tied to our wallet address by sending a POST to ```localhost:8000/requestValidation``` and pasting into the body our wallet address. Note: to get the wallet address we used the [online signature tool](https://reinproject.org/bitcoin-signature-tool/#sign) introduced in the project
 
